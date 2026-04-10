@@ -1,0 +1,141 @@
+-- Serviços
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+local SoundService = game:GetService("SoundService")
+
+-- GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+
+-- Botão 🤺
+local Button = Instance.new("TextButton")
+Button.Parent = ScreenGui
+Button.Size = UDim2.new(0, 60, 0, 60)
+Button.Position = UDim2.new(0.5, -30, 0.5, -30)
+Button.Text = "🤺"
+Button.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+Button.TextScaled = true
+Button.TextColor3 = Color3.fromRGB(255,255,255)
+
+-- Glow
+local Stroke = Instance.new("UIStroke")
+Stroke.Parent = Button
+Stroke.Color = Color3.fromRGB(0, 170, 255)
+Stroke.Thickness = 2
+
+-- Animação de pulso
+task.spawn(function()
+    while true do
+        TweenService:Create(Stroke, TweenInfo.new(1), {Thickness = 4}):Play()
+        task.wait(1)
+        TweenService:Create(Stroke, TweenInfo.new(1), {Thickness = 2}):Play()
+        task.wait(1)
+    end
+end)
+
+-- Drag
+local dragging = false
+local dragInput, dragStart, startPos
+
+local function update(input)
+    local delta = input.Position - dragStart
+    Button.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+Button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = Button.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+Button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement 
+    or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
+-- Clique
+Button.MouseButton1Click:Connect(function()
+
+    -- Animação clique (shrink)
+    TweenService:Create(Button, TweenInfo.new(0.1), {Size = UDim2.new(0,50,0,50)}):Play()
+    task.wait(0.1)
+    TweenService:Create(Button, TweenInfo.new(0.1), {Size = UDim2.new(0,60,0,60)}):Play()
+
+    -- Som
+    local Sound = Instance.new("Sound")
+    Sound.Parent = SoundService
+    Sound.SoundId = "rbxassetid://9118823102"
+    Sound.Volume = 3
+    Sound:Play()
+
+    -- Tela preta
+    local Black = Instance.new("Frame")
+    Black.Parent = ScreenGui
+    Black.Size = UDim2.new(1,0,1,0)
+    Black.BackgroundColor3 = Color3.new(0,0,0)
+    Black.BackgroundTransparency = 1
+
+    -- Fade in
+    TweenService:Create(Black, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+
+    -- Texto
+    local Text = Instance.new("TextLabel")
+    Text.Parent = Black
+    Text.Size = UDim2.new(1,0,1,0)
+    Text.BackgroundTransparency = 1
+    Text.Text = "MELHOR SCRIPT DUELS\nBy SATANÁS666\nVERSÃO PAGA⚠️"
+    Text.TextColor3 = Color3.fromRGB(255,255,255)
+    Text.TextScaled = true
+    Text.TextTransparency = 1
+
+    -- Fade texto
+    TweenService:Create(Text, TweenInfo.new(1), {TextTransparency = 0}):Play()
+
+    -- Zoom leve
+    Text.Size = UDim2.new(0.9,0,0.9,0)
+    TweenService:Create(Text, TweenInfo.new(1), {Size = UDim2.new(1,0,1,0)}):Play()
+
+    -- Glitch effect
+    task.spawn(function()
+        for i = 1,10 do
+            Text.Position = UDim2.new(0, math.random(-5,5), 0, math.random(-5,5))
+            task.wait(0.05)
+            Text.Position = UDim2.new(0,0,0,0)
+            task.wait(0.05)
+        end
+    end)
+
+    task.wait(2.5)
+
+    -- Executa script
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/tienkhanh1/spicy/main/Chilli.lua"))()
+
+    task.wait(1)
+
+    -- Fade out
+    TweenService:Create(Black, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
+    task.wait(0.5)
+    Black:Destroy()
+end)
